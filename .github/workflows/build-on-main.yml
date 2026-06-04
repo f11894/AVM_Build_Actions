@@ -54,7 +54,7 @@ jobs:
         for /f "tokens=7" %%i in ('avmenc.exe --help ^| find "AOMedia Project"') do set "avm_version=%%~i"
         7z a "avm_v%avm_version%_GCC_x64.7z" avmenc.exe avmdec.exe LICENSE PATENTS
     - name: Upload result
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: avm
         path: |
@@ -68,7 +68,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
     
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: avm
         path: artifacts
