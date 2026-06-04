@@ -33,8 +33,9 @@ jobs:
         copy /y avm\avm_build\*.exe .\
         copy /y avm\LICENSE LICENSE
         copy /y avm\PATENTS PATENTS
+        copy /y avm\AUTHORS AUTHORS
         for /f "tokens=7" %%i in ('avmenc.exe --help ^| find "AOMedia Project AV2 Encoder"') do set "avm_version=%%~i"
-        7z a "avm_v%avm_version%_GCC_x64.7z" avmenc.exe avmdec.exe LICENSE PATENTS
+        7z a "avm_%avm_version%_MSVC_x64.7z" avmenc.exe avmdec.exe LICENSE PATENTS AUTHORS
     - name: Upload result
       uses: actions/upload-artifact@v7
       with:
