@@ -1,0 +1,92 @@
+name: Build on main
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+      - cron: '0 0 * * 0'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - uses: msys2/setup-msys2@v2
+      with:
+        location: D:\msys2_github\
+        update: true
+        install: >-
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-nasm
+            mingw-w64-x86_64-yasm
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-pkg-config
+            mingw-w64-x86_64-meson
+            git
+            base-devel
+            autotools
+        msystem: MINGW64
+        path-type: strict
+    - name: build
+      shell: msys2 {0}
+      run: |
+        export HOME=${{ github.workspace }}
+        export LDFLAGS="-static -static-libgcc -static-libstdc++ -s"
+        export CFLAGS="-flto"
+        export CXXFLAGS="$CFLAGS"
+        git clone https://github.com/AOMediaCodec/avm
+        cd avm
+        mkdir gcc_cmake
+        cd gcc_cmake
+        cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release
+        ninja
+    - name: postprocessing
+      shell: cmd
+      run: |
+        copy /y avm\gcc_cmake\*.exe .\
+        copy /y avm\LICENSE LICENSE
+        copy /y avm\PATENTS PATENTS
+        for /f "tokens=7" %%i in ('avmenc.exe --help ^| find "AOMedia Project"') do set "avm_version=%%~i"
+        7z a "avm_v%avm_version%_GCC_x64.7z" avmenc.exe avmdec.exe LICENSE PATENTS
+    - name: Upload result
+      uses: actions/upload-artifact@v3
+      with:
+        name: avm
+        path: |
+          avm_*.7z
+
+  create_release:
+    name: Create release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    
+    - uses: actions/download-artifact@v3
+      with:
+        name: avm
+        path: artifacts
+    
+    - name: Get Date
+      id: get_date
+      run: |
+        DATE_TIME=`date +'%Y-%m-%d-%H-%M-%S'`
+        echo "DATE_TIME=${DATE_TIME}" >> $GITHUB_OUTPUT        
+    # https://github.com/Mr-Ojii/L-SMASH-Works-Auto-Builds
+    - name: Create a Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        TAG_NAME=build-${{ steps.get_date.outputs.DATE_TIME }}
+        assets=()
+        for asset in ${{ github.workspace }}/artifacts/*.7z; do
+          assets+=("$asset")
+        done
+        gh release create "$TAG_NAME" "${assets[@]}"
+        
