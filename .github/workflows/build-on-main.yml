@@ -21,6 +21,8 @@ jobs:
         yasm --version || choco install --no-progress -y yasm
     - name: build
       run: |
+        git clone https://github.com/AOMediaCodec/avm
+        cd avm
         cmake -B avm_build -S . -G Ninja -DCMAKE_BUILD_TYPE=Release -DENABLE_DOCS=0 -DENABLE_TESTS=0
         cmake --build avm_build -j
     - name: postprocessing
