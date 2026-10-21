@@ -10,7 +10,7 @@ jobs:
         branch: [v1.0.0]
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0
     - name: Set up MSVC (Windows)
@@ -47,9 +47,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v7
     
-    - uses: actions/download-artifact@v6
+    - uses: actions/download-artifact@v8
       with:
         name: avm
         path: artifacts
