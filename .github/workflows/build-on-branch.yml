@@ -32,7 +32,7 @@ jobs:
         path-type: strict
     - name: build
       shell: msys2 {0}
-        run: |
+      run: |
         export HOME=${{ github.workspace }}
         export LDFLAGS="-static -static-libgcc -static-libstdc++ -s"
         export CFLAGS=-"-flto"
