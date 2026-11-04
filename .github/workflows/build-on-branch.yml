@@ -36,8 +36,6 @@ jobs:
         shell: bash
         run: |
           export LDFLAGS="-static -static-libgcc -static-libstdc++ -s"
-          export CFLAGS="-flto"
-          export CXXFLAGS="${CFLAGS}"
 
           git clone --depth 1 -b "${{ matrix.branch }}" \
             https://github.com/AOMediaCodec/avm.git
@@ -46,7 +44,7 @@ jobs:
 
           cmake -S avm -B avm_build -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_TOOLCHAIN_FILE=avm/cmake/toolchains/x86_64-mingw-gcc.cmake \
+            -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/x86_64-mingw-gcc.cmake \
             -DCONFIG_ML_PART_SPLIT=0 \
             -DCONFIG_DIP_EXT_PRUNING=0
 
