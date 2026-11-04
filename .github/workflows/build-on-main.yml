@@ -40,7 +40,7 @@ jobs:
 
           git clone https://github.com/AOMediaCodec/avm.git
 
-          AVM_VERSION=$(git describe --tags --always)
+          AVM_VERSION=$(cd avm && git describe --tags --always)
 
           cmake -S avm -B avm_build -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
