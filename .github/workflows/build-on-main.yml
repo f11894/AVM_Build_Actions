@@ -37,8 +37,6 @@ jobs:
         shell: bash
         run: |
           export LDFLAGS="-static -static-libgcc -static-libstdc++ -s"
-          export CFLAGS="-flto"
-          export CXXFLAGS="${CFLAGS}"
 
           git clone https://github.com/AOMediaCodec/avm.git
 
